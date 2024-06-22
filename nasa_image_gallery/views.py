@@ -12,7 +12,7 @@ def index_page(request):
 
 # auxiliar: retorna 2 listados -> uno de las imágenes de la API y otro de los favoritos del usuario.
 def getAllImagesAndFavouriteList(request):
-    images = services_nasa_image_gallery.getAllImages()
+    images = services_nasa_image_gallery.getAllImages(request)
     favourite_list = []
 
     return images, favourite_list
@@ -21,23 +21,23 @@ def getAllImagesAndFavouriteList(request):
 def home(request):
     # llama a la función auxiliar getAllImagesAndFavouriteList() y obtiene 2 listados: uno de las imágenes de la API y otro de favoritos por usuario*.
     # (*) este último, solo si se desarrolló el opcional de favoritos; caso contrario, será un listado vacío [].
-    images,favourite_list = getAllImagesAndFavouriteList(request)
+    images,favourite_list = getAllImagesAndFavouriteList(None)
     
     return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
 
 
 # función utilizada en el buscador.
 def search(request):
-    images, favourite_list = getAllImagesAndFavouriteList(request)
     search_msg = request.POST.get('query', '')
     # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
     if (search_msg == ''):
         images, favourite_list = getAllImagesAndFavouriteList(request)
         return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
+    # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
     else:
-        images = services_nasa_image_gallery.getAllImages(search_msg)
-        # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
-        return render(request, 'home.html', {'images': images} )
+        images, favourite_list = getAllImagesAndFavouriteList(search_msg)
+       
+        return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
 
 def stringExists(text,object) :
     if text in object.title.lower() :
