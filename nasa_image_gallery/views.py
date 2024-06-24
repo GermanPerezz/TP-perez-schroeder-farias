@@ -11,9 +11,9 @@ def index_page(request):
     return render(request, 'index.html')
 
 # auxiliar: retorna 2 listados -> uno de las imágenes de la API y otro de los favoritos del usuario.
-def getAllImagesAndFavouriteList(request):
-    images = services_nasa_image_gallery.getAllImages(request)
-    favourite_list = []
+def getAllImagesAndFavouriteList(request,input):
+    images = services_nasa_image_gallery.getAllImages(input)
+    favourite_list = services_nasa_image_gallery.getAllFavouritesByUser(request)
 
     return images, favourite_list
 
@@ -21,7 +21,11 @@ def getAllImagesAndFavouriteList(request):
 def home(request):
     # llama a la función auxiliar getAllImagesAndFavouriteList() y obtiene 2 listados: uno de las imágenes de la API y otro de favoritos por usuario*.
     # (*) este último, solo si se desarrolló el opcional de favoritos; caso contrario, será un listado vacío [].
-    images,favourite_list = getAllImagesAndFavouriteList(None)
+
+    # Si estamos en la página home, borro la última palabra buscada de la sesión.
+    request.session['last_word_searched'] = ""
+
+    images,favourite_list = getAllImagesAndFavouriteList(request,None)
     
     return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
 
