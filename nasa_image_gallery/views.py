@@ -28,14 +28,15 @@ def home(request):
 
 # función utilizada en el buscador.
 def search(request):
-    search_msg = request.POST.get('query', '')
+    search_msg = request.GET.get('query', request.POST.get('query', ''))
+    request.session['last_word_searched'] = search_msg  # Guardar query en la sesión
     # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
     if (search_msg == ''):
-        images, favourite_list = getAllImagesAndFavouriteList(request)
+        images, favourite_list = getAllImagesAndFavouriteList(request,None)
         return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
     # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
     else:
-        images, favourite_list = getAllImagesAndFavouriteList(search_msg)
+        images, favourite_list = getAllImagesAndFavouriteList(request,search_msg)
        
         return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
 
@@ -53,7 +54,19 @@ def getAllFavouritesByUser(request):
 
 @login_required
 def saveFavourite(request):
-    pass
+    # Llamo a la función de la capa de servicios para guardar la tarjeta en la base de datos de favoritos.
+
+    services_nasa_image_gallery.saveFavourite(request)
+
+    # Obtengo de la sesión la última palabra de búsqueda que se hizo para mantenerme en la misma página.
+
+    query = request.session.get('last_word_searched', '')
+
+    if query:
+        # Redirige a la ruta '/buscar' con el valor de 'query'
+        return redirect(f'/buscar?query={query}')
+    else:
+        return redirect("home")
 
 
 @login_required
