@@ -52,7 +52,7 @@ def stringExists(text,object) :
 # las siguientes funciones se utilizan para implementar la sección de favoritos: traer los favoritos de un usuario, guardarlos, eliminarlos y desloguearse de la app.
 @login_required
 def getAllFavouritesByUser(request):
-    favourite_list = []
+    favourite_list = services_nasa_image_gallery.getAllFavouritesByUser(request)
     return render(request, 'favourites.html', {'favourite_list': favourite_list})
 
 
@@ -75,7 +75,8 @@ def saveFavourite(request):
 
 @login_required
 def deleteFavourite(request):
-    pass
+    services_nasa_image_gallery.deleteFavourite(request)
+    return redirect(f'/favourites')
 
 
 @login_required
