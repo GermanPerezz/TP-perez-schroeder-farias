@@ -4,12 +4,17 @@ from nasa_image_gallery.layers.generic.nasa_card import NASACard
 
 # usado cuando la info. viene de la API de la nasa, para transformarlo en una NASACard.
 def fromRequestIntoNASACard(object):
+    data = object['data'][0]
+    title = data.get('title', "Sin título")  # Valor predeterminado "Sin título"
+    description = data.get('description', "Sin descripción")  # Valor predeterminado "Sin descripción"
+    date_created = data.get('date_created', "0000-00-00")[:10]  # Valor predeterminado "0000-00-00"
+
     nasa_card = NASACard(
-                        title=object['data'][0]['title'],
-                        description=object['data'][0]['description'], 
-                        image_url=object['links'][0]['href'], 
-                        date=object['data'][0]['date_created'][:10]
-                )
+        title=title,
+        description=description,
+        image_url=object['links'][0]['href'],
+        date=date_created
+    )
 
     return nasa_card
 
